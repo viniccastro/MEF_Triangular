@@ -22,17 +22,18 @@ Resolve numericamente EDPs por meio do metodo de Galerkin no espaco 2D.
     * O plot da convergencia do erro.
 """
 function galerkin(dados_problema::Vector, dados_malha::Vector, f_exata::Function=identity)
+    
     # dados do probema
     alpha         = dados_problema[1] ::Float64
     beta          = dados_problema[2] ::Float64
     funcao_f      = dados_problema[3] ::Function
-
     # dados da malha
-    lista_elementos = dados_malha[1] :: Vector{Vector{Int}}
-    lista_pontos    = dados_malha[2] :: Vector{Matrix{Float64}}
-    lista_m         = dados_malha[3] :: Vector{Int}
-    lista_lg        = dados_malha[4] :: Vector{Matrix{Int}}
-    lista_eq        = dados_malha[5] :: Vector{Vector{Int}}
+    vetor_h         = dados_malha[1] :: Vector{Float64}
+    lista_elementos = dados_malha[2] :: Vector{Int}
+    lista_pontos    = dados_malha[3] :: Vector{Matrix{Float64}}
+    lista_m         = dados_malha[4] :: Vector{Int}
+    lista_lg        = dados_malha[5] :: Vector{Matrix{Int}}
+    lista_eq        = dados_malha[6] :: Vector{Vector{Int}}
 
     # quantidade de casos analizados
     quantidade_casos = length(lista_elementos)
@@ -42,12 +43,11 @@ function galerkin(dados_problema::Vector, dados_malha::Vector, f_exata::Function
 
     for x in 1:quantidade_casos
         # dados
-        numero_e = lista_elementos[x]   # numero de elementos em cada eixo
+        numero_e = lista_elementos[x]   # numero de elementos totais
         malha    = lista_pontos[x]      # pontos da malha
         valor_m  = lista_m[x]           # valor de m
         lg       = lista_lg[x]          # matriz localglobal(LG)
         eq       = lista_eq[x]          # matriz equacao(EQ)
-        e_totais = prod(numero_e)       # numero de elementos totais
         
         # composicao da EQ( LG )
         EqLg(ii,jj) = eq[ lg[ii, jj] ]
@@ -57,7 +57,7 @@ function galerkin(dados_problema::Vector, dados_malha::Vector, f_exata::Function
         gauss = [numero_gauss, pontos_gauss, pesos_gauss]
 
         # dados muito usados
-        dados_padrao = [malha, e_totais, valor_m, lg, EqLg]
+        dados_padrao = [malha, numero_e, valor_m, lg, EqLg]
         
         # matriz K(m x m)
         matriz_K = matriz_global(dados_padrao, gauss, alpha, beta)
@@ -84,15 +84,8 @@ function galerkin(dados_problema::Vector, dados_malha::Vector, f_exata::Function
 
     if quantidade_casos > 1 && f_exata != identity
         # ordem do erro
-        vetor_h = zeros(quantidade_casos)
-        vetor_h2 = zeros(quantidade_casos)
+        vetor_h2 = vetor_h .^2
 
-        for i in 1:quantidade_casos
-            h = 1 / lista_elementos[i][1]
-            vetor_h[i]  = sqrt(2)*h
-            vetor_h2[i] = 2*h^2
-
-        end
         # grafico dos erros
         plt2 = plot(vetor_h2, [vetor_h vetor_h2 vetor_erro], label=["O(h)" "O(h^2)" "Erro"], xaxis=:log, yaxis=:log, markershape=:circle)
         display(plt2)

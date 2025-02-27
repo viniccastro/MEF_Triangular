@@ -10,13 +10,14 @@ Gera uma manha regular em formato triangular como apenas elementos triangulares.
 - Matriz LG como a numeracao que relaciona a local com global;
 - Vetor EQ com a numeracao da fucoes inportantes.
 """
-function malha_triangular(numero_e::Int) :: Tuple{Matrix{Float64}, Int, Matrix{Int}, Vector{Int}}
+function malha_triangular(numero_e::Int) :: Tuple{Float64, Int, Matrix{Float64}, Int, Matrix{Int}, Vector{Int}}
 
     # verificador
     @assert numero_e > 2 "valor informado deve ser maior iqual a 3"
 
     # tamaho dos passos espaciais
     valor_h = 1 / numero_e
+    max_h   = valor_h*sqrt(2)
 
     # coordenadas dos pontos da malha
     pontos = transpose([0 0])
@@ -60,7 +61,7 @@ function malha_triangular(numero_e::Int) :: Tuple{Matrix{Float64}, Int, Matrix{I
     
     vetor_eq = [vetor_eq; ones(Int,numero_e+1) .* (valor_m+1)]
 
-    return valor_h*pontos, valor_m, matriz_lg, vetor_eq
+    return max_h, numero_e^2, valor_h*pontos, valor_m, matriz_lg, vetor_eq
 
 end
 
@@ -76,13 +77,14 @@ Gera uma manha regular em formato quadricular como apenas elementos triangulares
 - Matriz LG como a numeracao que relaciona a local com global;
 - Vetor EQ com a numeracao da fucoes inportantes.
 """
-function malha_quadricular(numero_e::Int) :: Tuple{Matrix{Float64}, Int, Matrix{Int}, Vector{Int}}
+function malha_quadricular(numero_e::Int) :: Tuple{Float64, Int, Matrix{Float64}, Int, Matrix{Int}, Vector{Int}}
 
     # verificador
     @assert numero_e > 1 "valor informado deve ser maior iqual a 2"
 
     # tamaho dos passos espaciais
     valor_h = 1 / numero_e
+    max_h   = valor_h*sqrt(2)
 
     # coordenadas dos pontos da malha
     pontos = transpose([0:1:numero_e  fill(0, numero_e+1)])
@@ -125,6 +127,6 @@ function malha_quadricular(numero_e::Int) :: Tuple{Matrix{Float64}, Int, Matrix{
     vetor_eq = [tampa ; vetor_eq ; tampa]
 
 
-    return valor_h*pontos, valor_m, matriz_lg, vetor_eq
+    return max_h, 2*(numero_e^2), valor_h*pontos, valor_m, matriz_lg, vetor_eq
 
 end

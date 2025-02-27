@@ -40,7 +40,7 @@ Calcula o valor da derivada da funcao g aplicada em um ponto.
 # Retorna
 - Um vetor com os valores do ponto aplicado na derivada da funcao g.
 # """
-function derivada_funcao_g(dimencao::Int, ponto_xi::Vector{Float64}, pontos_elemento::Matrix{Float64}) :: Vector{Float64}
+function derivada_funcao_g(dimencao::Int, pontos_elemento::Matrix{Float64}) :: Vector{Float64}
 
     # inicializando as coordenadas
     coordenada1 = 0
@@ -49,8 +49,8 @@ function derivada_funcao_g(dimencao::Int, ponto_xi::Vector{Float64}, pontos_elem
     # calculando das coordenadas
     for a in 1:3
 
-        coordenada1 += pontos_elemento[1,a] * derivada_phi(dimencao, a, ponto_xi)
-        coordenada2 += pontos_elemento[2,a] * derivada_phi(dimencao, a, ponto_xi)
+        coordenada1 += pontos_elemento[1,a] * derivada_phi(dimencao, a)
+        coordenada2 += pontos_elemento[2,a] * derivada_phi(dimencao, a)
 
     end
 
